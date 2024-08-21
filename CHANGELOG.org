@@ -1,0 +1,53 @@
+#+title: Change log of hl-sentence-long-lines
+#+author: James Dyer
+#+email: captainflasmr@gmail.com
+#+language: en
+#+options: ':t toc:nil author:nil email:nil num:nil title:nil
+#+todo: TODO DOING | DONE
+#+startup: showall
+
+This document contains the release notes for each tagged commit on the
+project's main git repository: [[https://github.com/captainflasmr/hl-sentence-long-lines]]
+
+* Versions
+
+** v0.1.0
+
+First version
+
+* Testing
+
+developing locally using:
+
+#+begin_src elisp
+(use-package hl-sentence-long-lines
+   :load-path "~/repos/hl-sentence-long-lines"
+#+end_src
+
+commiting to github then removing ~/.config/emacs/elpa/hl-sentence-long-lines, changing emacs init to:
+
+#+begin_src elisp
+(use-package hl-sentence-long-lines
+  :vc (:fetcher github :repo "captainflasmr/hl-sentence-long-lines")
+#+end_src
+
+restart emacs and test
+
+* Validation
+
+** eval-buffer
+
+** flycheck
+
+** checkdoc
+
+Use =checkdoc= to make sure that your package follows the conventions for documentation strings, within reason.
+
+Buffer comments and tags:  Ok
+Documentation style:       Ok
+Message/Query text style:  Ok
+Unwanted Spaces:           Ok
+
+** package-lint-current-buffer
+
+=package-lint= to help identify common errors in package metadata.

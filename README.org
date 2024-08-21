@@ -1,0 +1,211 @@
+#+title: hl-sentence-long-lines
+#+author: James Dyer
+#+email: captainflasmr@gmail.com
+#+language: en
+#+options: ':t toc:nil author:nil email:nil num:nil title:nil
+#+todo: TODO DOING | DONE
+#+startup: showall
+
+* Summary
+
+This Emacs package provides highlighting for the current sentence and optionally highlights sentences that exceed a customizable word limit and is heavily based on =hl-sentence= but with a few additional features.
+
+The recommended number of words in a sentence can vary depending on the context and the audience, but generally speaking:
+
+- **Short sentences (up to 20 words):** These are typically recommended for clear and effective communication, especially in writing intended for a broad audience. This range is often suggested for business writing, journalism, and other forms of professional communication.
+
+- **Medium-length sentences (20-30 words):** These can be used when you need to provide adequate detail or explanation but still want to maintain readability. This is common in academic and technical writing.
+
+- **Long sentences (over 30 words):** These can sometimes be necessary for complex ideas or detailed descriptions. However, they should be used sparingly and balanced with shorter sentences to avoid overwhelming the reader.
+
+In educational and writing guides, 20 words is often cited as a good average to aim for, ensuring that sentences are concise and easy to understand while still being informative. However, this can vary based on the target audience's literacy level or familiarity with the topic. For example, sentences in a children's book will be much shorter than those in a research paper.
+
+Taking these considerations into account, you might typically set a sentence word limit of 20 words to highlight long sentences. However, if you see a different standard that aligns better with your specific needs or audience, you can adjust the limit accordingly.
+
+Here is how you might set this limit in your Emacs configuration:
+
+#+begin_src elisp
+(defcustom hl-sentence-word-limit 20
+  "The word limit for highlighting long sentences."
+  :type 'integer
+  :group 'hl-sentence)
+#+end_src
+
+Adjusting this value will allow you to experiment with different thresholds to find what works best for your particular use case.
+
+* Screenshot
+
+* Links
+
+* Whats New
+
+** v0.1.0
+
+First version
+
+* Features
+
+- Highlight the current sentence in the buffer.
+- Display the word count of the current sentence in the mode line.
+- Highlight sentences that exceed a specified word limit.
+
+* Installation
+
+** use-package (MELPA)
+
+#+begin_src elisp
+(use-package hl-sentence-long-lines)
+#+end_src
+
+** use-package (emacs 30+) directly from github
+
+Put the following into your emacs init file:
+
+#+begin_src elisp
+(use-package hl-sentence-long-lines
+  :vc (:fetcher github :repo "captainflasmr/hl-sentence-long-lines"))
+#+end_src
+
+** From source
+
+Download the `.el` file and place it in your Emacs `load-path` or in a specific source directory "~/source/repos/hl-sentence-long-lines"
+
+Then either manually load it or add it to your configuration to be loaded at startup.
+
+#+begin_src elisp
+(require 'hl-sentence-long-lines)
+#+end_src
+
+OR
+
+#+begin_src elisp
+(use-package hl-sentence-long-lines
+  :load-path "~/source/repos/hl-sentence-long-lines")
+#+end_src
+
+* Usage
+
+To use `hl-sentence-long-lines` mode, enable it in the desired buffer using the following command:
+
+#+BEGIN_SRC elisp
+(hl-sentence-long-lines-mode 1)
+#+END_SRC
+
+Alternatively, you can enable it globally:
+
+#+BEGIN_SRC elisp
+(global-hl-sentence-long-lines-mode 1)
+#+END_SRC
+
+Once enabled, the current sentence will be highlighted, and its word count will be displayed in the mode line. Sentences that exceed the specified word limit will be highlighted with a different face.
+
+* Customization
+
+#+begin_src emacs-lisp :results table :colnames '("Custom variable" "Description") :exports results
+  (let ((rows))
+    (mapatoms
+     (lambda (symbol)
+       (when (and (string-match "^hl-sentence-long-"
+                                (symbol-name symbol))
+                  (not (string-match "--" (symbol-name symbol)))
+                  (or (custom-variable-p symbol)
+                      (boundp symbol)))
+         (push `(,symbol
+                 ,(car
+                   (split-string
+                    (or (get (indirect-variable symbol)
+                             'variable-documentation)
+                        (get symbol 'variable-documentation)
+                        "")
+                    "\n")))
+               rows))))
+    rows)
+#+end_src
+
+#+RESULTS:
+| Custom variable                       | Description                                                         |
+|---------------------------------------+---------------------------------------------------------------------|
+| hl-sentence-long-lines-mode-hook      | Hook run after entering or leaving `hl-sentence-long-lines-mode'.   |
+| hl-sentence-long-lines-word-count-str | String to display the current sentence word count in the mode line. |
+| hl-sentence-long-lines-extent         | The location of the hl-sentence-long-lines-mode overlay.            |
+| hl-sentence-long-lines-word-limit     | The word limit for highlighting long sentences.                     |
+| hl-sentence-long-lines-mode           | Non-nil if Hl-Sentence-Long-Lines mode is enabled.                  |
+
+* Commands
+
+#+BEGIN_SRC emacs-lisp :results table :colnames '("Command" "Description") :exports results
+    (let ((rows))
+      (mapatoms
+       (lambda (symbol)
+         (when (and (string-match "^hl-sentence-long-"
+                                  (symbol-name symbol))
+                    (commandp symbol))
+           (push `(,(string-join
+                     (seq-filter
+                      (lambda (symbol)
+                        (not (string-match "menu" symbol)))
+                      (mapcar
+                       (lambda (keys)
+                         (key-description keys))
+                       (or
+                        (where-is-internal
+                         (symbol-function symbol)
+                         comint-mode-map
+                         nil nil (command-remapping 'comint-next-input))
+                        (where-is-internal
+                         symbol ready-player-major-mode-map nil nil (command-remapping symbol))
+                        (where-is-internal
+                         (symbol-function symbol)
+                         ready-player-major-mode-map nil nil (command-remapping symbol)))))  " or ")
+                   ,(symbol-name symbol)
+                   ,(car
+                     (split-string
+                      (or (documentation symbol t) "")
+                      "\n")))
+                 rows))))
+      rows)
+#+END_SRC
+
+#+RESULTS:
+|   | hl-sentence-long-lines-mode | Enable highlighting of the current sentence. |
+
+* Contributing
+
+Contributions to =hl-sentence-long-lines= are welcome! Whether it's bug reports, feature suggestions, or code contributions, feel free to reach out or submit pull requests on GitHub.
+
+* ISSUES
+
+#+begin: kanban :layout ("..." . 50) :scope nil :range ("TODO" . "DONE") :sort "O" :depth 3 :match "issues" :compressed t
+| TODO                                               | DOING | DONE |
+|----------------------------------------------------+-------+------|
+| [[file:README.org::*package-lint-current-buffer error][package-lint-current-buffer error]]                  |       |      |
+| [[file:README.org::*count of number of words per sentence seems 1 too many][count of number of words per sentence seems 1 t...]] |       |      |
+| [[file:README.org::*would be nice to highlight the whole buffer with long lines][would be nice to highlight the whole buffer wit...]] |       |      |
+#+end:
+
+* ROADMAP
+
+#+begin: kanban :layout ("..." . 100) :scope nil :range ("TODO" . "TODO") :sort "O" :depth 3 :match "roadmap" :compressed t
+#+end:
+
+* ISSUES (github)                                                    :issues:
+
+* ISSUES (other)                                                     :issues:
+
+** TODO package-lint-current-buffer error
+1:0: error: package.el cannot parse this buffer: Search failed: ";;;
+hl-sentence-long-lines.el ends here"
+** TODO count of number of words per sentence seems 1 too many
+** TODO would be nice to highlight the whole buffer with long lines
+
+* ROADMAP                                                           :roadmap:
+
+* Testing
+
+See CHANGELOG.org
+
+* Alternatives
+
+** License
+
+This package is licensed under GPL Version 3
