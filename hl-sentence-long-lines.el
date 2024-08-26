@@ -70,7 +70,7 @@
   (let ((sentence (buffer-substring-no-properties
                    (hl-sentence-long-lines-begin-pos)
                    (hl-sentence-long-lines-end-pos))))
-    (length (split-string sentence "\\W+"))))
+    (- (length (split-string sentence "\\W+")) 1)))
 
 (defvar hl-sentence-long-lines-extent nil
   "The location of the hl-sentence-long-lines-mode overlay.")
@@ -84,18 +84,31 @@
         (format " Words: %d" (hl-sentence-long-lines-word-count)))
   (force-mode-line-update))
 
-(defun hl-sentence-long-lines-highlight-long-sentence (start end)
-  "Highlight sentence between START and END if it exceeds `hl-sentence-long-lines-word-limit`."
+(defun hl-sentence-long-lines-highlight-long-sentence ()
+  "Highlight sentences in buffer `hl-sentence-long-lines-word-limit`."
+  (remove-overlays nil nil 'highlight-long-sentences t)
   (save-excursion
-    (goto-char start)
-    (let ((word-count 0))
-      (while (and (< (point) end)
-                  (re-search-forward "\\w+" end t))
-        (setq word-count (1+ word-count)))
-      (if (> word-count hl-sentence-long-lines-word-limit)
-          (let ((ov (make-overlay start end)))
-            (overlay-put ov 'face 'hl-sentence-long-lines-face)
-            (overlay-put ov 'highlight-long-sentences t))))))
+    (goto-char (point-min))
+    (while (re-search-forward "[.!?:\n]" nil t)
+      (let ((my-end (point)))
+        (backward-sentence)
+        (let ((my-start (point)))
+          (save-excursion
+            (goto-char my-start)
+            (let ((word-count 0))
+              (while (and (< (point) my-end)
+                          (re-search-forward "\\w+" my-end t))
+                (setq word-count (1+ word-count)))
+              (prin1 word-count)
+              (when (>= word-count hl-sentence-long-lines-word-limit)
+                (highlight-region my-start my-end 'hl-sentence-long-lines-face)))))
+        (goto-char my-end)))))
+
+(defun highlight-region (my-start my-end face)
+  "Highlight region from MY-START to MY-END with FACE. Tag the overlay."
+  (let ((ov (make-overlay my-start my-end)))
+    (overlay-put ov 'face face)
+    (overlay-put ov 'highlight-long-sentences t)))
 
 ;;;###autoload
 (define-minor-mode hl-sentence-long-lines-mode
@@ -118,7 +131,7 @@ Also highlight if the sentence exceeds `hl-sentence-long-lines-word-limit`."
              (end (hl-sentence-long-lines-end-pos)))
          (move-overlay hl-sentence-long-lines-extent beg end (current-buffer))
          (hl-sentence-long-lines-update-word-count)
-         (hl-sentence-long-lines-highlight-long-sentence beg end))))
+         (hl-sentence-long-lines-highlight-long-sentence))))
 
 (setq hl-sentence-long-lines-extent (make-overlay 0 0))
 (overlay-put hl-sentence-long-lines-extent 'face 'hl-sentence-long-lines)
