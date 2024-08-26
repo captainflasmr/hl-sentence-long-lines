@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'transient)
+
 (defgroup hl-sentence-long-lines nil
   "Highlight the current sentence."
   :group 'convenience)
@@ -46,6 +48,21 @@
 (defcustom hl-sentence-long-lines-word-limit 20
   "The word limit for highlighting long sentences."
   :type 'integer
+  :group 'hl-sentence-long-lines)
+
+(defcustom hl-sentence-long-lines-word-count-toggle t
+  "When non-nil, the `hl-sentence-long-lines-word-count-toggle` is active."
+  :type 'boolean
+  :group 'hl-sentence-long-lines)
+
+(defcustom hl-sentence-long-lines-highlighting-toggle t
+  "When non-nil, the `hl-sentence-long-lines-highlighting-toggle` is active."
+  :type 'boolean
+  :group 'hl-sentence-long-lines)
+
+(defcustom hl-sentence-long-lines-sentence-toggle t
+  "When non-nil, the `hl-sentence-long-lines-sentence-toggle` is active."
+  :type 'boolean
   :group 'hl-sentence-long-lines)
 
 (defun hl-sentence-long-lines-begin-pos ()
@@ -99,7 +116,6 @@
               (while (and (< (point) my-end)
                           (re-search-forward "\\w+" my-end t))
                 (setq word-count (1+ word-count)))
-              (prin1 word-count)
               (when (>= word-count hl-sentence-long-lines-word-limit)
                 (highlight-region my-start my-end 'hl-sentence-long-lines-face)))))
         (goto-char my-end)))))
@@ -109,6 +125,25 @@
   (let ((ov (make-overlay my-start my-end)))
     (overlay-put ov 'face face)
     (overlay-put ov 'highlight-long-sentences t)))
+
+ (defun hl-sentence-long-lines-toggle-word-count ()
+    "Toggle word count on modeline."
+    (interactive)
+    (setq hl-sentence-long-lines-word-count-toggle
+          (not hl-sentence-long-lines-word-count-toggle))
+    (force-mode-line-update))
+
+ (defun hl-sentence-long-lines-toggle-highlighting ()
+    "Toggle sentence long highlighting."
+    (interactive)
+    (setq hl-sentence-long-lines-highlighting-toggle
+          (not hl-sentence-long-lines-highlighting-toggle)))
+
+ (defun hl-sentence-long-lines-toggle-sentence ()
+    "Toggle the sentence highlighting."
+    (interactive)
+    (setq hl-sentence-long-lines-sentence-toggle
+          (not hl-sentence-long-lines-sentence-toggle)))
 
 ;;;###autoload
 (define-minor-mode hl-sentence-long-lines-mode
@@ -129,13 +164,27 @@ Also highlight if the sentence exceeds `hl-sentence-long-lines-word-limit`."
        hl-sentence-long-lines-extent
        (let ((beg (hl-sentence-long-lines-begin-pos))
              (end (hl-sentence-long-lines-end-pos)))
-         (move-overlay hl-sentence-long-lines-extent beg end (current-buffer))
-         (hl-sentence-long-lines-update-word-count)
-         (hl-sentence-long-lines-highlight-long-sentence))))
+         (if hl-sentence-long-lines-sentence-toggle
+             (move-overlay hl-sentence-long-lines-extent beg end (current-buffer))
+           (remove-overlays nil nil 'highlight-sentences t))
+         (if hl-sentence-long-lines-word-count-toggle
+             (hl-sentence-long-lines-update-word-count)
+           (setq hl-sentence-long-lines-word-count-str ""))
+         (if hl-sentence-long-lines-highlighting-toggle
+             (hl-sentence-long-lines-highlight-long-sentence)
+               (remove-overlays nil nil 'highlight-long-sentences t)))))
 
 (setq hl-sentence-long-lines-extent (make-overlay 0 0))
 (overlay-put hl-sentence-long-lines-extent 'face 'hl-sentence-long-lines)
+(overlay-put hl-sentence-long-lines-extent 'highlight-sentences t)
+
+(transient-define-prefix hl-sentence-long-lines-transient ()
+  "Sentence Highlighting Transient Commands."
+  ["Sentence Highlighting"
+   ("w" "Toggle word count in modeline" hl-sentence-long-lines-toggle-word-count)
+   ("l" "Toggle long sentence highlighting" hl-sentence-long-lines-toggle-highlighting)
+   ("s" "Toggle sentence highlighting" hl-sentence-long-lines-toggle-sentence)])
 
 (provide 'hl-sentence-long-lines)
 
-;;; hl-sentence.el ends here
+;;; hl-sentence-long-lines.el ends here
