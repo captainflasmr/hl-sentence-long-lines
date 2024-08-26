@@ -123,13 +123,16 @@ Once enabled, the current sentence will be highlighted, and its word count will 
 #+end_src
 
 #+RESULTS:
-| Custom variable                       | Description                                                         |
-|---------------------------------------+---------------------------------------------------------------------|
-| hl-sentence-long-lines-mode-hook      | Hook run after entering or leaving `hl-sentence-long-lines-mode'.   |
-| hl-sentence-long-lines-word-count-str | String to display the current sentence word count in the mode line. |
-| hl-sentence-long-lines-extent         | The location of the hl-sentence-long-lines-mode overlay.            |
-| hl-sentence-long-lines-word-limit     | The word limit for highlighting long sentences.                     |
-| hl-sentence-long-lines-mode           | Non-nil if Hl-Sentence-Long-Lines mode is enabled.                  |
+| Custom variable                            | Description                                                               |
+|--------------------------------------------+---------------------------------------------------------------------------|
+| hl-sentence-long-lines-highlighting-toggle | When non-nil, the `hl-sentence-long-lines-highlighting-toggle` is active. |
+| hl-sentence-long-lines-word-limit          | The word limit for highlighting long sentences.                           |
+| hl-sentence-long-lines-word-count-str      | String to display the current sentence word count in the mode line.       |
+| hl-sentence-long-lines-mode                | Non-nil if Hl-Sentence-Long-Lines mode is enabled.                        |
+| hl-sentence-long-lines-sentence-toggle     | When non-nil, the `hl-sentence-long-lines-sentence-toggle` is active.     |
+| hl-sentence-long-lines-mode-hook           | Hook run after entering or leaving `hl-sentence-long-lines-mode'.         |
+| hl-sentence-long-lines-word-count-toggle   | When non-nil, the `hl-sentence-long-lines-word-count-toggle` is active.   |
+| hl-sentence-long-lines-extent              | The location of the hl-sentence-long-lines-mode overlay.                  |
 
 * Commands
 
@@ -167,7 +170,11 @@ Once enabled, the current sentence will be highlighted, and its word count will 
 #+END_SRC
 
 #+RESULTS:
-|   | hl-sentence-long-lines-mode | Enable highlighting of the current sentence. |
+|       | hl-sentence-long-lines-toggle-word-count   | Toggle word count on modeline.               |
+|       | hl-sentence-long-lines-mode                | Enable highlighting of the current sentence. |
+|       | hl-sentence-long-lines-toggle-highlighting | Toggle sentence long highlighting.           |
+| C-c l | hl-sentence-long-lines-transient           | Sentence Highlighting Transient Commands.    |
+|       | hl-sentence-long-lines-toggle-sentence     | Toggle the sentence highlighting.            |
 
 * Contributing
 
@@ -178,9 +185,7 @@ Contributions to =hl-sentence-long-lines= are welcome! Whether it's bug reports,
 #+begin: kanban :layout ("..." . 50) :scope nil :range ("TODO" . "DONE") :sort "O" :depth 3 :match "issues" :compressed t
 | TODO                                               | DOING | DONE |
 |----------------------------------------------------+-------+------|
-| [[file:README.org::*package-lint-current-buffer error][package-lint-current-buffer error]]                  |       |      |
-| [[file:README.org::*count of number of words per sentence seems 1 too many][count of number of words per sentence seems 1 t...]] |       |      |
-| [[file:README.org::*would be nice to highlight the whole buffer with long lines][would be nice to highlight the whole buffer wit...]] |       |      |
+| [[file:README.org::*optimise performance, doesn't work too well with big files][optimise performance, doesn't work too well wit...]] |       |      |
 #+end:
 
 * ROADMAP
@@ -191,12 +196,7 @@ Contributions to =hl-sentence-long-lines= are welcome! Whether it's bug reports,
 * ISSUES (github)                                                    :issues:
 
 * ISSUES (other)                                                     :issues:
-
-** TODO package-lint-current-buffer error
-1:0: error: package.el cannot parse this buffer: Search failed: ";;;
-hl-sentence-long-lines.el ends here"
-** TODO count of number of words per sentence seems 1 too many
-** TODO would be nice to highlight the whole buffer with long lines
+** TODO optimise performance, doesn't work too well with big files
 
 * ROADMAP                                                           :roadmap:
 
